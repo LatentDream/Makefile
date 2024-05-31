@@ -1,9 +1,34 @@
-################################################################################
+###############################################################################
+# MIT License
+#
+# Copyright (c) 2020 Misha Krieger-Raynauld
+#   **Edited for C**
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+###############################################################################
+
+###############################################################################
 #### Variables and settings
-################################################################################
+###############################################################################
 
 # Executable name
-EXEC = program
+EXEC = TODO_CHANGE_THIS
 
 # Build, bin, assets, and install directories (bin and build root directories are kept for clean)
 BUILD_DIR_ROOT = build
@@ -14,7 +39,7 @@ INSTALL_DIR := ~/Desktop/$(EXEC)
 
 # Sources (searches recursively inside the source directory)
 SRC_DIR = src
-SRCS := $(sort $(shell find $(SRC_DIR) -name '*.cpp'))
+SRCS := $(sort $(shell find $(SRC_DIR) -name '*.c'))
 
 # Includes
 INCLUDE_DIR = include
@@ -23,16 +48,16 @@ INCLUDES := -I$(INCLUDE_DIR)
 # C preprocessor settings
 CPPFLAGS = $(INCLUDES) -MMD -MP
 
-# C++ compiler settings
-CXX = g++
-CXXFLAGS = -std=c++20
+# C compiler settings
+CC = gcc
+CCFLAGS = -std=c11
 WARNINGS = -Wall -Wpedantic -Wextra
 
 # Linker flags
 LDFLAGS =
 
 # Libraries to link
-LDLIBS =
+LDLIBS = 
 
 # Target OS detection
 ifeq ($(OS),Windows_NT) # OS is a preexisting environment variable on Windows
@@ -92,10 +117,10 @@ ifeq ($(OS),windows)
 
 	ifeq ($(win32),1)
 		# Compile for 32-bit
-		CXXFLAGS += -m32
+		CCFLAGS += -m32
 	else
 		# Compile for 64-bit
-		CXXFLAGS += -m64
+		CCFLAGS += -m64
 	endif
 endif
 
@@ -121,21 +146,21 @@ endif
 ifeq ($(release),1)
 	BUILD_DIR := $(BUILD_DIR)/release
 	BIN_DIR := $(BIN_DIR)/release
-	CXXFLAGS += -O3
+	CCFLAGS += -O3
 	CPPFLAGS += -DNDEBUG
 else
 	BUILD_DIR := $(BUILD_DIR)/debug
 	BIN_DIR := $(BIN_DIR)/debug
-	CXXFLAGS += -O0 -g
+	CCFLAGS += -O0 -g
 endif
 
 # Objects and dependencies
-OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
-DEPS := $(OBJS:.o=.d)
+OBJS := $(SRCS:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
+DEPS := $(OBJS:.o=.c.d)
 COMPDBS := $(OBJS:.o=.json)
 
 # All files (sources and headers)
-FILES := $(shell find $(SRC_DIR) $(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
+FILES := $(shell find $(SRC_DIR) $(INCLUDE_DIR) -name '*.c' -o -name '*.h' -o -name '*.inl')
 
 ################################################################################
 #### Targets
@@ -148,13 +173,13 @@ all: $(BIN_DIR)/$(EXEC)
 $(BIN_DIR)/$(EXEC): $(OBJS)
 	@echo "Building executable: $@"
 	@mkdir -p $(@D)
-	@$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	@$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-# Compile C++ source files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+# Compile C source files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "Compiling: $<"
 	@mkdir -p $(@D)
-	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(WARNINGS) -c $< -o $@
+	@$(CC) $(CPPFLAGS) $(CCFLAGS) $(WARNINGS) -c $< -o $@
 
 # Include automatically generated dependencies
 -include $(DEPS)
@@ -204,12 +229,12 @@ $(BUILD_DIR_ROOT)/compile_commands.json: $(COMPDBS)
 	@printf "]\n" >> $@
 
 # Generate JSON compilation database fragments from source files
-$(BUILD_DIR)/%.json: $(SRC_DIR)/%.cpp
+$(BUILD_DIR)/%.json: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
 	@printf "\
 	{\n\
 	    \"directory\": \"$(CURDIR)\",\n\
-	    \"command\": \"$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(WARNINGS) -c $< -o $(basename $@).o\",\n\
+	    \"command\": \"$(CC) $(CPPFLAGS) $(CCFLAGS) $(WARNINGS) -c $< -o $(basename $@).o\",\n\
 	    \"file\": \"$<\"\n\
 	}\n" > $@
 
@@ -286,11 +311,9 @@ printvars:
 	SRCS: \"$(SRCS)\"\n\
 	INCLUDE_DIR: \"$(INCLUDE_DIR)\"\n\
 	INCLUDES: \"$(INCLUDES)\"\n\
-	CXX: \"$(CXX)\"\n\
+	CC: \"$(CC)\"\n\
 	CPPFLAGS: \"$(CPPFLAGS)\"\n\
-	CXXFLAGS: \"$(CXXFLAGS)\"\n\
+	CCFLAGS: \"$(CFLAGS)\"\n\
 	WARNINGS: \"$(WARNINGS)\"\n\
 	LDFLAGS: \"$(LDFLAGS)\"\n\
 	LDLIBS: \"$(LDLIBS)\"\n"
-
-# Made by Misha Krieger-Raynauld (https://github.com/KRMisha/Makefile)

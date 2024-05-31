@@ -1,10 +1,12 @@
 <p align="center">
-    <img height=128 src="https://github.com/isocpp/logos/blob/master/cpp_logo.png?raw=true" />
+    <img height=128 src="./c_logo.png" />
 </p>
 
 # Makefile
 
-A cross-platform C++ Makefile for any project!
+**A cross-platform C Makefile**
+
+For C++, see the original repo done by [KRMisha](https://github.com/KRMisha/Makefile)
 
 ## Features
 
