@@ -6,7 +6,8 @@
 
 **A cross-platform C Makefile**
 
-For C++, see the original repo done by [KRMisha](https://github.com/KRMisha/Makefile)
+- For C++, see the original repo done by [KRMisha](https://github.com/KRMisha/Makefile)
+- Still in the process of being modified to suit my needs
 
 ## Features
 
@@ -93,7 +94,7 @@ This will compile the executable and output it inside the `bin` directory. This 
 By default, all builds use GCC. To use another compiler, override the `CXX` variable when invoking `make`. For example, to use Clang:
 
 ```sh
-make CXX=clang++
+make CC=clang
 ```
 
 ### Running
